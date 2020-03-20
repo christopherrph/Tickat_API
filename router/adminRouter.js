@@ -54,8 +54,16 @@ router.get('/getTickets/:idnya', adminController.getTickets)
 router.get('/countuser',adminController.countuser)
 router.get('/countpartner',adminController.countpartner)
 router.get('/countevent',adminController.countevent)
+router.get('/countallevent',adminController.countallevent)
 router.get('/countfeedback',adminController.countfeedback)
 router.get('/countpaymentmethodbyevent/:idnya',adminController.countpaymentmethodbyevent)
 router.get('/counttickettypebyevent/:idnya',adminController.counttickettypebyevent)
+router.get('/countdoneevent',adminController.countdoneevent)
+router.get('/countinactiveevent',adminController.countinactiveevent)
+
+router.get('/getUserGender',adminController.getUserGender)
+router.get('/getUserAge',adminController.getUserAge)
+router.get('/getEventCategory',adminController.getEventCategory)
+router.get('/getMonthlyTransaction',adminController.getMonthlyTransaction)
 
 module.exports = router;

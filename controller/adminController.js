@@ -138,6 +138,14 @@ module.exports = {
             }
             res.status(200).send(results)
              });
+    },countallevent : (req,res) => {
+        let sql = "SELECT count(idevent) as total FROM event WHERE event_status = 'Active';"
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
     },
 
 
@@ -555,6 +563,69 @@ module.exports = {
              });
     },counttickettypebyevent : (req,res) => {
         let sql = `SELECT tt.idticket, et.ticket_name, count(tt.idticket) as jumlah  FROM transaction_ticket tt INNER JOIN event_ticket et ON tt.idticket = et.idticket WHERE tt.idevent ='${req.params.idnya}' GROUP BY idticket`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getUserGender : (req,res) => {
+        let sql = "SELECT gender,count(iduser) as jumlah FROM user WHERE status='Active' GROUP BY gender"
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getUserAge : (req,res) => {
+        let sql = `SELECT 
+        CASE WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) <= 20 THEN '<20'
+             WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) <= 30 THEN '20-30'
+             WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) <= 50 THEN '30-50'
+             WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) > 50 THEN '>50' END AS Age,
+        COUNT(*) Total
+        FROM user
+        GROUP BY Age
+        ORDER BY CASE WHEN Age = '<20' THEN '1'
+                      WHEN Age = '20-30' THEN '2'
+                      WHEN Age = '30-50' THEN '3'
+                      WHEN Age = '>50' THEN '4'
+                      ELSE Age END ASC`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getEventCategory : (req,res) => {
+        let sql = "SELECT e.idcategory, c.category_name, count(e.idcategory) as Total FROM event e INNER JOIN category c ON e.idcategory = c.idcategory WHERE event_status ='Active' GROUP BY e.idcategory;"
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },countdoneevent : (req,res) => {
+        let sql = "SELECT count(idevent) as total FROM event WHERE event_status = 'Active' AND event_date < CURDATE();"
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },countinactiveevent : (req,res) => {
+        let sql = "SELECT count(idevent) as total FROM event WHERE event_status != 'Active';"
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getMonthlyTransaction : (req,res) => {
+        let sql = `SELECT MONTHNAME(transaction_time) as Month, YEAR(transaction_time) as Year, COUNT(idtransaction) AS Total_Transaction, SUM(totalprice) AS Total_Money, SUM(totalticket) AS Total_Ticket
+        FROM transaction
+        GROUP BY EXTRACT(YEAR_MONTH FROM transaction_time)
+        ORDER BY EXTRACT(YEAR_MONTH FROM transaction_time) DESC`
         db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
             if(err){
                 res.status(500).send(err)
