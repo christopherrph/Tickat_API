@@ -15,5 +15,6 @@ router.post('/addTransactionTransfer', userController.addTransactionTransfer)
 router.post('/addTransactionTicket', userController.addTransactionTicket)
 router.get('/getTransactionByUser/:idnya', userController.getTransactionByUser)
 router.get('/getTickets/:idnya', userController.getTickets)
+router.get('/getEventLowestPrice/:idnya', userController.getEventLowestPrice)
 
 module.exports = router;

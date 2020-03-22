@@ -61,6 +61,15 @@ router.get('/counttickettypebyevent/:idnya',adminController.counttickettypebyeve
 router.get('/countdoneevent',adminController.countdoneevent)
 router.get('/countinactiveevent',adminController.countinactiveevent)
 
+router.get('/countusermonth/:bulan/:tahun',adminController.countusermonth)
+router.get('/countpartnermonth/:bulan/:tahun',adminController.countpartnermonth)
+router.get('/countalleventmonth/:bulan/:tahun',adminController.countalleventmonth)
+router.get('/getAllTransactionmonth/:bulan/:tahun', adminController.getAllTransactionmonth)
+router.get('/countpaymentmethodbymonth/:bulan/:tahun',adminController.countpaymentmethodbymonth)
+router.get('/getEventCategorybymonth/:bulan/:tahun',adminController.getEventCategorybymonth)
+router.get('/getAllEventmonth/:bulan/:tahun', adminController.getAllEventmonth)
+router.get('/getEventLaku/:bulan/:tahun', adminController.getEventLaku)
+
 router.get('/getUserGender',adminController.getUserGender)
 router.get('/getUserAge',adminController.getUserAge)
 router.get('/getEventCategory',adminController.getEventCategory)

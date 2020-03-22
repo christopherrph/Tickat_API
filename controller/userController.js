@@ -167,16 +167,35 @@ module.exports = {
         }
 
         let mailOptions = {
-            from : 'Admin <tickatickat@gmail.com>',
+            from : 'TICKAT <tickatickat@gmail.com>',
             to: req.body.email,
-            subject: 'Tickat Purchase Succesfull',
+            subject: 'Tickat Purchase',
             html : `
+            <img width="200px" src="cid:logoku">
             <h3>Hello</h3> \n
             <a>
                 Thank you for purchasing tickets with us, you can view your purchased ticket through your profile page in our website. \n
                 We hope you enjoy your experience with us.
+            </a>\n
+            <h3>Here are the details of your order</h3> 
+            <hr/>
+            <a style="font-size:15px;">
+                Event Name          : ${req.body.event_name}
+            <br/>
+                Transaction ID      : ${req.body.idtransaction}
+            <br/>
+                Invoice Date        : ${req.body.transaction_time}
+            <br/>
+                Total Payment       : Rp.${req.body.totalprice}
+            <br/>
+                Total Ticket        : ${req.body.totalticket}
             </a>
-            `
+            `,
+            attachments:[{
+                filename : 'logoSS.png',
+                path: 'http://localhost:2000/logoSS.png',
+                cid : 'logoku'
+            }]
         }
         transporter.sendMail(mailOptions, (err,res2) => {
             if(err){
@@ -199,6 +218,14 @@ module.exports = {
              });
     },getTickets : (req,res) => {
         let sql = `SELECT * FROM transaction_ticket tt INNER JOIN event_ticket t ON tt.idticket = t.idticket INNER JOIN event e ON tt.idevent = e.idevent WHERE idtransaction ='${req.params.idnya}' ORDER BY t.ticket_name`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getEventLowestPrice : (req,res) => {
+        let sql = `SELECT MIN(ticket_price) as Minimal FROM event_ticket WHERE idevent ='${req.params.idnya}'`
         db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
             if(err){
                 res.status(500).send(err)

@@ -632,5 +632,93 @@ module.exports = {
             }
             res.status(200).send(results)
              });
+    },countusermonth : (req,res) => {
+        console.log(req.params.bulan)
+        console.log(req.params.tahun)
+        let sql = `SELECT count(iduser) as total FROM user WHERE status = 'Active' AND MONTH(joindate) = ${req.params.bulan} AND YEAR(joindate) = ${req.params.tahun}`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },countpartnermonth : (req,res) => {
+        console.log(req.params.bulan)
+        console.log(req.params.tahun)
+        let sql = `SELECT count(idpartner) as total FROM partner WHERE partner_status = 'Active' AND MONTH(join_date) = ${req.params.bulan} AND YEAR(join_date) = ${req.params.tahun}`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },countalleventmonth : (req,res) => {
+        let sql = `SELECT count(idevent) as total FROM event WHERE event_status = 'Active' AND MONTH(event_date) = ${req.params.bulan} AND YEAR(event_date) = ${req.params.tahun}`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getAllTransactionmonth : (req,res) => {
+        console.log(req.params.bulan)
+        console.log(req.params.tahun)
+        let sql = `SELECT * FROM transaction t INNER JOIN event e ON t.idevent = e.idevent WHERE MONTH(transaction_time) = ${req.params.bulan} AND YEAR(transaction_time) = ${req.params.tahun} ORDER BY t.transaction_time desc `
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },countpaymentmethodbymonth : (req,res) => {
+        let sql = `SELECT payment_method ,count(payment_method) as jumlah FROM transaction WHERE MONTH(transaction_time) = ${req.params.bulan} AND YEAR(transaction_time) = ${req.params.tahun} GROUP BY payment_method;`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getEventCategorybymonth : (req,res) => {
+        let sql = `SELECT e.idcategory, c.category_name, count(e.idcategory) as Total 
+        FROM event e INNER JOIN category c ON e.idcategory = c.idcategory 
+        WHERE event_status ='Active' 
+        AND MONTH(e.event_date) = ${req.params.bulan} 
+        AND YEAR(e.event_date) = ${req.params.tahun} 
+        GROUP BY e.idcategory;`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getAllEventmonth : (req,res) => {
+        let sql = `SELECT * FROM event e 
+        INNER JOIN partner p ON e.idpartner = p.idpartner 
+        INNER JOIN category c ON e.idcategory = c.idcategory 
+        WHERE event_status ='Active'  
+        AND MONTH(e.event_date) = ${req.params.bulan} 
+        AND YEAR(e.event_date) = ${req.params.tahun} 
+        ORDER BY e.event_date DESC;`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getEventLaku: (req,res) => {
+        let sql = `SELECT e.event_name, sum(t.totalticket) as TotalTicket, sum(t.totalprice) as TotalEarn FROM event e 
+        INNER JOIN transaction t 
+        ON t.idevent = e.idevent  
+        WHERE event_status ='Active'  
+        AND MONTH(e.event_date) = ${req.params.bulan} 
+        AND YEAR(e.event_date) = ${req.params.tahun} 
+        GROUP BY e.event_name
+        ORDER BY TotalTicket DESC`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
     }
 }

@@ -161,6 +161,7 @@ module.exports = {
         try{
             var newPass = makeid(8);
             var passuncrypt = newPass
+            var image = "../public/LogoSS.PNG"
             console.log(newPass)
             newPass = crypto.createHmac('sha256',secret).update(newPass).digest('hex');
             console.log(newPass)
@@ -172,15 +173,23 @@ module.exports = {
                 }
                 
                 let mailOptions = {
-                    from : 'Admin <tickatickat@gmail.com>',
+                    from : 'TICKAT <tickatickat@gmail.com>',
                     to: req.params.emailnya,
                     subject: 'Forgot Password',
                     html : `
-                    <h3>Halo</h3> \n
+                    <img width="200px" src="cid:logoku">
+                    <h3>New Password </h3> \n
                     <a>
-                        Your new password is: ${passuncrypt} 
+                        Hello, your new password is: ${passuncrypt}, you can change your password through your profile page.
+                    <br/>
+                       Thankyou and have a good day!
                     </a>
-                    `
+                    `,
+                    attachments:[{
+                        filename : 'logoSS.png',
+                        path: 'http://localhost:2000/logoSS.png',
+                        cid : 'logoku'
+                    }]
                 }
 
                 transporter.sendMail(mailOptions, (err,res2) => {
