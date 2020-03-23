@@ -232,5 +232,17 @@ module.exports = {
             }
             res.status(200).send(results)
              });
+    },getPartnerTop5Acara : (req,res) => {               //parameter req adalah data yang dikirim dari front-end
+        let sql = `SELECT p.idpartner, p.partner_name, p.partner_pic, count(idevent) as TotalAcara FROM partner p INNER JOIN event e 
+        ON e.idpartner = p.idpartner
+        GROUP BY p.idpartner
+        ORDER BY TotalAcara DESC
+        LIMIT 5`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
     }
 }

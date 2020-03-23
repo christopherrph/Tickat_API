@@ -92,7 +92,7 @@ module.exports = {
         console.log(req.params.emailnya)
         let sql = `SELECT * FROM user WHERE email='${req.params.emailnya}';`
         db.query(sql, (err, results) => {
-            if(err || results.length == 0){
+            if(err){
                 console.log(err)
                 return res.status(500).send(err)
             }
