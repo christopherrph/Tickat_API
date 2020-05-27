@@ -244,5 +244,14 @@ module.exports = {
             }
             res.status(200).send(results)
              });
+    },getLastTransaction : (req,res) => {               //parameter req adalah data yang dikirim dari front-end
+        let sql = `SELECT transaction_time FROM transaction WHERE idevent='${req.params.idnya}' ORDER BY transaction_time DESC LIMIT 1;`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                console.log(err)
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
     }
 }

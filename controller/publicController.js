@@ -96,6 +96,9 @@ module.exports = {
                 console.log(err)
                 return res.status(500).send(err)
             }
+            if(results.length == 0){
+                return res.status(500).send(err)
+            }
             res.status(200).send(results)
         });
     },login : (req,res) => {

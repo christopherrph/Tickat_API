@@ -413,7 +413,21 @@ module.exports = {
             res.status(200).send(results)
              });
     },getAllEventLater : (req,res) => {
-        let sql = "SELECT * FROM event e INNER JOIN partner p ON e.idpartner = p.idpartner INNER JOIN category c ON e.idcategory = c.idcategory WHERE event_status ='Active' AND event_date > CURDATE() ORDER BY e.event_date ASC;"
+        let sql = `SELECT e.*, p.*, c.*,MAX(t.transaction_time) as LastTransaction FROM event e 
+        INNER JOIN partner p ON e.idpartner = p.idpartner 
+        INNER JOIN category c ON e.idcategory = c.idcategory 
+        LEFT JOIN transaction t ON e.idevent = t.idevent
+        WHERE event_status ='Active' AND event_date > CURDATE() 
+        group by e.idevent
+        ORDER BY e.event_date ASC;`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getAllEventLikeUser : (req,res) => {
+        let sql = `SELECT * FROM event e INNER JOIN partner p ON e.idpartner = p.idpartner INNER JOIN category c ON e.idcategory = c.idcategory WHERE e.event_date > CURDATE() AND e.event_status='Active' AND e.event_name LIKE '%${req.params.like}%' OR p.partner_name LIKE '%${req.params.like}%' OR c.category_name LIKE '%${req.params.like}%';`
         db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
             if(err){
                 res.status(500).send(err)
@@ -585,6 +599,7 @@ module.exports = {
              WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) > 50 THEN '>50' END AS Age,
         COUNT(*) Total
         FROM user
+        WHERE status = 'Active'
         GROUP BY Age
         ORDER BY CASE WHEN Age = '<20' THEN '1'
                       WHEN Age = '20-30' THEN '2'
@@ -714,6 +729,29 @@ module.exports = {
         AND YEAR(e.event_date) = ${req.params.tahun} 
         GROUP BY e.event_name
         ORDER BY TotalTicket DESC`
+        db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
+            if(err){
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
+             });
+    },getEventUserAge : (req,res) => {
+        let sql = `SELECT 
+        CASE WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) <= 20 THEN '<20'
+             WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) <= 30 THEN '20-30'
+             WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) <= 50 THEN '30-50'
+             WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d'))) > 50 THEN '>50' END AS Age,
+        COUNT(*) Total
+        FROM (SELECT t.iduser, u.name, u.birthdate FROM transaction t INNER JOIN user u ON
+                t.iduser = u.iduser
+                WHERE idevent ='${req.params.idnya}'
+                GROUP BY u.iduser) AS Hasil
+        GROUP BY Age
+        ORDER BY CASE WHEN Age = '<20' THEN '1'
+                      WHEN Age = '20-30' THEN '2'
+                      WHEN Age = '30-50' THEN '3'
+                      WHEN Age = '>50' THEN '4'
+                      ELSE Age END ASC`
         db.query(sql, (err, results) => {   //db.query(sql,.....) make database yang uda di declare dengan query = sql.
             if(err){
                 res.status(500).send(err)
